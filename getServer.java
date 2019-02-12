@@ -21,7 +21,11 @@ public class Server {
 			// 서버소켓
 			try {
 				System.out.println(getTime() + "연결요청을 기다립니다.");
-				Socket socket = serverSocket.accept();
+
+        //요청대기시간을 5초로 설정한다.
+        //5초동안 접속요청이 없으면 SocketTimeoutException이 발생한다.
+        serverSocket.setSoTimeout(5 * 1000);
+        Socket socket = serverSocket.accept();
 				System.out.println(getTime() + socket.getInetAddress() + "로부터 연결요청이 들어왔습니다.");
 				System.out.println("getPort() : " + socket.getPort());
 				System.out.println("getLocalPort() : " + socket.getLocalPort());
@@ -38,9 +42,12 @@ public class Server {
 				dout.close();
 				socket.close();
 
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			} catch (SocketTimeoutException e) {
+				System.out.println("지정된 시간동안 접속요청이 없어서 서버를 종료합니다.");
+        System.exit(0);
+			} catch (IOException e){
+        e.printStackTrace();
+      }
 
 		}
 	}
